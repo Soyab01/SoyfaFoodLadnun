@@ -38,7 +38,7 @@
             min-height: 100vh; 
         }
         
-        /* FIX START: Removed all fixed header related CSS */
+        /* FIX START: Removed all fixed header related CSS and body padding-top */
         #app-panel:not(.hidden) body {
             padding-top: 0; 
             padding-bottom: var(--nav-height); 
@@ -54,15 +54,13 @@
             padding-bottom: var(--content-pad); 
         }
 
-        /* FIX: Hide Menu Scrollbar */
-        #menu-scroll-wrapper::-webkit-scrollbar {
-            display: none; 
-        }
+        /* FIX: Menu Scroll Wrapper - REMOVED SCROLLBAR HIDING AND FIXED HEIGHTS */
         #menu-scroll-wrapper {
-            -ms-overflow-style: none;  
-            scrollbar-width: none;  
+            /* Now an unrestricted div, allowing page scroll */
+            overflow-y: visible; /* Changed from auto/scroll */
+            padding-bottom: 0; 
         }
-        /* END SCROLLBAR HIDE */
+        /* END SCROLL FIX */
 
 
         .btn { padding: 12px 15px; border: none; border-radius: var(--border-radius); cursor: pointer; transition: all 0.3s ease; font-weight: bold; text-align: center; width: 100%; margin-top: 10px; font-size: 16px; }
@@ -177,7 +175,53 @@
             100% { opacity: 1; transform: scale(1); } 
         }
         /* ------------------------------------------------ */
-
+        
+        /* NEW: Order Done Modal Styles */
+        #order-done-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .order-done-card {
+            background: #4CAF50; /* Green success color */
+            color: white;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            animation: pulse-in 0.5s ease-out;
+        }
+        .order-done-card .icon {
+            font-size: 5em;
+            line-height: 1;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .order-done-card h3 {
+            color: white;
+            margin-bottom: 5px;
+            font-size: 1.5em;
+        }
+        .order-done-card p {
+            color: #eee;
+            margin-bottom: 20px;
+        }
+        @keyframes pulse-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        /* END Order Done Modal Styles */
+        
         /* Home View & Components */
         #home-view > .app-title {
              margin-top: 0; 
@@ -222,19 +266,11 @@
              padding-bottom: calc(var(--menu-action-height) + var(--content-pad)); /* Ensures scrollable space above fixed menu bar */
         }
         #menu-view .app-title {
-             margin-top: 0; /* Remove top margin from the first element in the container */
+             margin-top: 0; 
         }
-        #menu-restaurant-image { margin-top: 15px; /* Add margin under notification/title if present */ }
+        #menu-restaurant-image { margin-top: 15px; }
         #menu-scroll-wrapper {
-            max-height: 40vh; 
-            overflow-y: auto; 
-            padding-bottom: 10px;
-        }
-        @media (min-height: 700px) {
-            #menu-scroll-wrapper {
-                /* Recalculated max height based on non-fixed header */
-                max-height: calc(100vh - var(--nav-height) - 400px); 
-            }
+            overflow-y: visible;
         }
 
 
@@ -274,7 +310,10 @@
             padding-bottom: calc(var(--nav-height) + var(--content-pad)); 
         }
         #cart-view .app-title {
-             margin-top: 0; /* Remove top margin from the first element in the container */
+             margin-top: 0; 
+        }
+        #cart-view h2 {
+             margin-top: 15px; 
         }
         .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .cart-item-controls { display: flex; align-items: center; background: #f5f5f5; border-radius: 20px; padding: 2px; }
@@ -288,7 +327,10 @@
              padding-bottom: calc(var(--nav-height) + var(--content-pad)); 
         }
         #orders-view .app-title {
-             margin-top: 0; /* Remove top margin from the first element in the container */
+             margin-top: 0; 
+        }
+        #orders-view h2 {
+             margin-top: 15px; 
         }
         .order-card { background: var(--card-background); padding: 15px; margin-bottom: 15px; border-radius: var(--border-radius); box-shadow: var(--shadow); }
         .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }
@@ -308,7 +350,10 @@
             padding-bottom: calc(var(--nav-height) + var(--content-pad)); 
         }
         #profile-view .app-title {
-             margin-top: 0; /* Remove top margin from the first element in the container */
+             margin-top: 0; 
+        }
+        #profile-view h2 {
+             margin-top: 15px; 
         }
         .profile-card { background: var(--card-background); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 20px; }
         .profile-field { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
@@ -385,20 +430,29 @@
             <div class="rating-stars">
                 <!-- 5-Star input. Clicking 5 stars redirects to Play Store -->
                 <input type="radio" id="app-s5" name="app-rating" value="5" onclick="redirectToPlayStore();"/><label for="app-s5" onclick="playClickSound()">★</label>
-                <input type="radio" id="app-s4" name="app-rating" value="4"/><label for="app-s4" onclick="playClickSound()">★</label>
-                <input type="radio" id="app-s3" name="app-rating" value="3"/><label for="app-s3" onclick="playClickSound()">★</label>
-                <input type="radio" id="app-s2" name="app-rating" value="2"/><label for="app-s2" onclick="playClickSound()">★</label>
-                <input type="radio" id="app-s1" name="app-rating" value="1"/><label for="app-s1" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s4" name="app-rating" value="4" onclick="document.getElementById('rating-modal').classList.add('hidden'); alert('Thank you for your rating!'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });"/><label for="app-s4" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s3" name="app-rating" value="3" onclick="document.getElementById('rating-modal').classList.add('hidden'); alert('Thank you for your rating!'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });"/><label for="app-s3" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s2" name="app-rating" value="2" onclick="document.getElementById('rating-modal').classList.add('hidden'); alert('Thank you for your rating!'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });"/><label for="app-s2" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s1" name="app-rating" value="1" onclick="document.getElementById('rating-modal').classList.add('hidden'); alert('Thank you for your rating!'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });"/><label for="app-s1" onclick="playClickSound()">★</label>
             </div>
             <p style="font-size: 0.8em; color: #777;">*5-star rating will take you to the Play Store!</p>
-            <button class="btn btn-secondary" style="margin-top: 15px;" onclick="document.getElementById('rating-modal').classList.add('hidden'); playClickSound();">Close</button>
+            <button class="btn btn-secondary" style="margin-top: 15px;" onclick="document.getElementById('rating-modal').classList.add('hidden'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true }); playClickSound();">Close</button>
+        </div>
+    </div>
+    
+    <!-- NEW: Order Done Modal -->
+    <div id="order-done-modal" class="hidden">
+        <div class="order-done-card">
+            <span class="icon">✓</span>
+            <h3>Order Placed!</h3>
+            <p>Preparing your delicious meal now.</p>
         </div>
     </div>
 
 
     <!-- 1. Auth/Login Panel -->
     <div id="auth-panel" class="container">
-        <img id="auth-image" src="https://t3.ftcdn.net/jpg/02/79/75/74/360_F_279757414_o2KNnB8fZ2eahIK6SqydL4tGFkO5RDH5.jpg" alt="Food Delivery Banner">
+        <img id="auth-image" src="https://t3.ftcdn.net/jpg/02/79/75/74/360_F_0279757414_o2KNnB8fZ2eahIK6SqydL4tGFkO5RDH5.jpg" alt="Food Delivery Banner">
         <div class="auth-card" id="auth-main-card">
             <h2 id="auth-title">Sign Up</h2> 
             <input type="email" id="auth-email" placeholder="Email" required>
@@ -465,10 +519,8 @@
             <img id="menu-restaurant-image" src="" alt="Restaurant Image">
             <h2 id="menu-restaurant-name" style="margin-bottom: 5px;">Restaurant Name</h2>
             <p id="menu-restaurant-cuisine" style="margin-bottom: 15px; color: #777;"></p>
-            <!-- Scrollable wrapper for menu items -->
-            <div id="menu-scroll-wrapper">
-                <div id="menu-items-list"></div>
-            </div>
+            <!-- Scrollable wrapper for menu items - NOW JUST A DIV, PAGE SCROLLS -->
+            <div id="menu-items-list"></div>
         </div>
 
         <!-- Fixed Menu Action Bar -->
@@ -520,8 +572,8 @@
                     <button class="btn btn-secondary" onclick="playClickSound(); toggleProfileEditMode(false);">Cancel</button>
                 </div>
                 <div style="margin-top: 30px;">
-                    <a href="#" class="info-link-btn" onclick="playClickSound(); document.getElementById('rating-modal').classList.remove('hidden');">Rate App</a> <!-- NEW Rate App Button -->
-                    <a href="#" class="info-link-btn" onclick="playClickSound(); shareApp();">Share App</a> <!-- NEW Share App Button -->
+                    <a href="#" class="info-link-btn" onclick="playClickSound(); document.getElementById('rating-modal').classList.remove('hidden');">Rate App</a> 
+                    <a href="#" class="info-link-btn" onclick="playClickSound(); shareApp();">Share App</a> 
                     <a href="#" class="info-link-btn" onclick="playClickSound(); showProfileInfoPage('about-page');">About Us</a> 
                     <a href="#" class="info-link-btn" onclick="playClickSound(); showProfileInfoPage('privacy-page');">Privacy Policy</a> 
                     <a href="#" class="info-link-btn" onclick="playClickSound(); showProfileInfoPage('terms-page');">Terms & Conditions</a> 
@@ -585,28 +637,94 @@
         const DELIVERY_FEE = 50.00;
         let currentSlide = 0, canPlayAudio = false, isSignUpMode = true; 
         const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.soyfa.soyfaeducation";
+        let ratingPopUpTimer = null; // Timer variable for rating pop-up
 
         // --- NEW: App Rating & Share Functions ---
         function redirectToPlayStore() {
-            // Check if 5 stars is selected (or just redirect immediately for 5 star experience)
-            // Since we tied the click directly to the 5th star in HTML, this logic is simple:
+             // Mark as prompted in DB immediately when 5 star is clicked
+             if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });
+            
+            // Check if 5 stars is selected or click came from 5-star
             if(document.getElementById('app-s5').checked) {
                 document.getElementById('rating-modal').classList.add('hidden');
                 alert("Thank you for your 5-star rating! Redirecting to Play Store...");
-                window.open(PLAY_STORE_URL, '_system'); // Use '_system' for native app if possible, or '_blank' for browser
+                window.open(PLAY_STORE_URL, '_blank'); // Use '_blank' for browser redirect
             }
         }
         
         function shareApp() {
             const shareText = encodeURIComponent("Soyfa Food ऐप बहुत शानदार है! इससे आप आसानी से अपने पसंदीदा रेस्टोरेंट से खाना ऑर्डर कर सकते हैं। इसे आज ही डाउनलोड करें: " + PLAY_STORE_URL);
             
-            // Check for mobile to use WhatsApp link, otherwise use standard web share or alert
-            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            // Prefer navigator.share if available (more modern)
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Soyfa Food App',
+                    text: decodeURIComponent(shareText),
+                    url: PLAY_STORE_URL,
+                }).catch((error) => console.log('Error sharing', error));
+            } else if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                // Fallback for mobile WhatsApp
                 window.open("whatsapp://send?text=" + shareText, '_system');
             } else {
+                // Fallback for desktop/web
                 alert("WhatsApp Web पर शेयर करने के लिए यह लिंक कॉपी करें:\n\n" + decodeURIComponent(shareText));
             }
         }
+        
+        function showRatingPopUpOnce() {
+            // Check if the user is not yet prompted and has delivered orders
+             if (customerProfile.ratingPrompted !== true && auth.currentUser) {
+                
+                // Fetch the count of DELIVERED orders
+                db.ref('orders')
+                    .orderByChild('customerUid').equalTo(auth.currentUser.uid)
+                    .once('value', snapshot => {
+                        let deliveredCount = 0;
+                        snapshot.forEach(childSnapshot => {
+                            if (childSnapshot.val().status === 'DELIVERED') {
+                                deliveredCount++;
+                            }
+                        });
+
+                        // Logic: Show pop-up only after the FIRST delivered order (deliveredCount === 1)
+                        if (deliveredCount === 1) {
+                            
+                            // Set a 30 second timer for showing the pop-up
+                            ratingPopUpTimer = setTimeout(() => {
+                                document.getElementById('rating-modal').classList.remove('hidden');
+                                
+                                // Mark as prompted in DB immediately after showing
+                                // NOTE: We update the DB here, but if the user closes without 5 stars, it's marked as prompted forever.
+                                db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });
+                            }, 30000); // 30 seconds
+                        }
+                    });
+            }
+        }
+        
+        function cancelRatingPopUpTimer() {
+             if (ratingPopUpTimer) {
+                 clearTimeout(ratingPopUpTimer);
+                 ratingPopUpTimer = null;
+             }
+        }
+
+        function showOrderDoneModal() {
+            // 1. Show the Order Done Modal
+            document.getElementById('order-done-modal').classList.remove('hidden');
+            
+            // 2. Play sound
+            playOrderDoneSound();
+            
+            // 3. Set timer for auto-redirect (2 seconds)
+            setTimeout(() => {
+                document.getElementById('order-done-modal').classList.add('hidden');
+                
+                // 4. Redirect to Orders screen
+                showPanel('orders-view'); 
+            }, 2000); // 2 seconds delay
+        }
+
         // --- END NEW FUNCTIONS ---
 
         // --- Auth & Init ---
@@ -618,11 +736,15 @@
 
         function toggleAuthMode(forceSignUp) { isSignUpMode = typeof forceSignUp === 'boolean' ? forceSignUp : !isSignUpMode; document.getElementById('auth-title').textContent = isSignUpMode ? 'Sign Up' : 'Login'; document.getElementById('auth-action-btn').textContent = isSignUpMode ? 'Sign Up' : 'Login'; ['auth-name','auth-phone','auth-city','auth-pincode','auth-address'].forEach(id => document.getElementById(id).classList.toggle('hidden', !isSignUpMode)); document.querySelector('.auth-card button:nth-of-type(2)').textContent = isSignUpMode ? 'Switch to Login' : 'Switch to Sign Up'; document.getElementById('auth-error').classList.add('hidden'); showInfoPage('auth-main-card'); }
         function handleAuth() { const e = document.getElementById('auth-email').value, p = document.getElementById('auth-password').value, err = document.getElementById('auth-error'); err.classList.add('hidden'); if (isSignUpMode) { const n=document.getElementById('auth-name').value, ph=document.getElementById('auth-phone').value, c=document.getElementById('auth-city').value, pc=document.getElementById('auth-pincode').value; if(!n||!e||!p||!ph||!c||!pc) { err.textContent="Fill all fields."; err.classList.remove('hidden'); return; } auth.createUserWithEmailAndPassword(e,p).then(uc=>{ db.ref(`customers/${uc.user.uid}`).set({name:n,email:e,phone:ph,city:c,pincode:pc,address:document.getElementById('auth-address').value||'N/A',createdAt:new Date().toISOString()}); }).catch(e=>{err.textContent=e.message;err.classList.remove('hidden');}); } else { auth.signInWithEmailAndPassword(e,p).catch(e=>{err.textContent=e.message;err.classList.remove('hidden');}); } }
-        function customerLogout() { auth.signOut(); cart = []; }
+        function customerLogout() { auth.signOut(); cart = []; cancelRatingPopUpTimer(); } // Cancel timer on logout
         auth.onAuthStateChanged(u => { if(u) { document.getElementById('auth-panel').classList.add('hidden'); document.getElementById('app-panel').classList.remove('hidden'); loadCustomerData(u.uid); loadNotifications(); showPanel('home-view'); } else { document.getElementById('auth-panel').classList.remove('hidden'); document.getElementById('app-panel').classList.add('hidden'); toggleAuthMode(true); } });
 
         // --- Panel Navigation ---
         function showPanel(panelId) {
+            // Cancel timer on every panel change
+            cancelRatingPopUpTimer(); 
+            document.getElementById('rating-modal').classList.add('hidden'); // Hide modal just in case
+            
             document.querySelectorAll('.content-panel').forEach(p => p.classList.add('hidden'));
             document.getElementById(panelId).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -641,7 +763,8 @@
             }
             
             if(panelId === 'orders-view') loadOrders();
-            if(panelId === 'home-view') loadRestaurants();
+            // IMPORTANT: loadOrders now handles the rating pop-up trigger after checking delivered orders
+            if(panelId === 'home-view') { loadRestaurants(); loadOrders(); } 
         }
         function showInfoPage(pId) { document.querySelectorAll('#auth-panel > div').forEach(e => e.classList.add('hidden')); document.getElementById('auth-image')?.classList.remove('hidden'); document.getElementById(pId).classList.remove('hidden'); if(pId!=='auth-main-card'){ document.getElementById('auth-panel').classList.remove('hidden'); document.getElementById('app-panel').classList.add('hidden'); } }
         function showProfileInfoPage(pId) { showInfoPage(pId); document.querySelector(`#${pId} .btn-secondary`).onclick = () => { playClickSound(); document.getElementById('auth-panel').classList.add('hidden'); document.getElementById('app-panel').classList.remove('hidden'); showPanel('profile-view'); }; }
@@ -742,8 +865,9 @@
                 customerName: n, phone: p, address: a, city: customerProfile.city, pincode: customerProfile.pincode,
                 paymentMethod: 'COD', status: 'PLACED', createdAt: new Date().toISOString()
             }).then(()=>{
-                playOrderDoneSound(); alert('Order Placed Successfully (COD)!'); cart=[];
-                showPanel('orders-view');
+                cart=[];
+                // Show done modal and auto-redirect
+                showOrderDoneModal();
             }).catch(e=>alert(e.message));
         }
 
@@ -755,17 +879,56 @@
                     const oStr = s.val()||{}; list.innerHTML = '';
                     const oArr = Object.values(oStr).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
                     if(oArr.length===0) return list.innerHTML='<p>No orders yet.</p>';
+                    
+                    let deliveredCount = 0;
                     oArr.forEach(o => {
+                         if (o.status === 'DELIVERED') {
+                             deliveredCount++;
+                         }
+                        
                         const step = ['CANCELLED','PLACED','PREPARING','OUT_FOR_DELIVERY','DELIVERED'].indexOf(o.status.replace('ACCEPTED','PLACED').replace('READY_FOR_PICKUP','PREPARING').replace('PICKED_UP','OUT_FOR_DELIVERY'));
                         const prog = step<=0?'0%':step===1?'10%':step===2?'40%':step===3?'70%':'100%';
                         const trackHTML = o.status==='CANCELLED'?'':`<div class="tracking-bar" style="--progress-width:${prog}"><div class="tracking-step ${step>=1?'active':''}"><span class="tracking-icon">🍽️</span>Restaurant</div><div class="tracking-step ${step>=2?'active':''}"><span class="tracking-icon">🍳</span>Preparing</div><div class="tracking-step ${step>=3?'active':''}"><span class="tracking-icon">🛵</span>Out</div><div class="tracking-step ${step>=4?'active':''}"><span class="tracking-icon">🏠</span>Delivered</div></div>`;
                         const ratingHTML = (o.status==='DELIVERED' && !o.rating) ? `<div style="margin-top:10px;border-top:1px dashed #eee;padding-top:10px;"><p>Rate:</p><div class="stars"><input type="radio" id="s5-${o.orderId}" name="r-${o.orderId}" value="5"/><label for="s5-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s4-${o.orderId}" name="r-${o.orderId}" value="4"/><label for="s4-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s3-${o.orderId}" name="r-${o.orderId}" value="3"/><label for="s3-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s2-${o.orderId}" name="r-${o.orderId}" value="2"/><label for="s2-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s1-${o.orderId}" name="r-${o.orderId}" value="1"/><label for="s1-${o.orderId}" onclick="playClickSound()">★</label></div><button class="btn btn-primary btn-small" onclick="submitRating('${o.orderId}')">Submit</button></div>` : (o.rating?`<p style="color:green;font-weight:bold;">You rated: ⭐${o.rating}</p>`:'');
                         list.innerHTML += `<div class="order-card"><div class="order-header"><h4>#${o.orderId.substring(0,8)}</h4><span class="order-status ${o.status.replace(/_/g,'')}">${o.status.replace(/_/g,' ')}</span></div><p>From: <strong>${rData[o.restaurantId]?.name||'Restaurant'}</strong> | ₹${o.totalAmount.toFixed(2)}</p>${trackHTML}<p style="font-size:0.9em;color:#777;margin-top:5px;">${o.items.map(i=>`${i.name} x${i.quantity}`).join(', ')}</p>${ratingHTML}</div>`;
                     });
+                    
+                    // FIX: Check for rating pop-up condition after loading orders
+                    if (deliveredCount === 1 && customerProfile.ratingPrompted !== true) {
+                        // User has exactly one DELIVERED order and hasn't been prompted yet.
+                        // Wait 30 seconds before showing the pop-up
+                        ratingPopUpTimer = setTimeout(() => {
+                            document.getElementById('rating-modal').classList.remove('hidden');
+                        }, 30000); // 30 seconds
+                    }
+
                 });
             });
         }
         function submitRating(oId) { const v = document.querySelector(`input[name="r-${oId}"]:checked`)?.value; if(!v) return alert('Select stars'); db.ref(`orders/${oId}`).update({rating:parseInt(v)}).then(()=>{ alert('Thanks for rating!'); loadOrders(); }); }
+        
+        // Update close button functionality to mark as shown
+        document.querySelector('#rating-modal .btn-secondary').onclick = function() {
+            document.getElementById('rating-modal').classList.add('hidden');
+            // Mark as prompted in DB if the user is logged in
+            if (auth.currentUser) {
+                db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });
+            }
+            playClickSound();
+        };
+
+        // Update other star clicks to mark as shown
+        document.querySelectorAll('.rating-stars input[name="app-rating"]:not(#app-s5)').forEach(input => {
+            input.onclick = function() {
+                document.getElementById('rating-modal').classList.add('hidden');
+                alert('Thank you for your rating!');
+                // Mark as prompted in DB
+                 if (auth.currentUser) {
+                    db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });
+                 }
+                playClickSound();
+            }
+        });
     </script>
 </body>
-</html>```
+</html>
