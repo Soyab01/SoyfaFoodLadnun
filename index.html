@@ -41,11 +41,9 @@
         /* FIX START: Removed all fixed header related CSS */
         #app-panel:not(.hidden) body {
             padding-top: 0; 
-            padding-bottom: var(--nav-height); /* Set to just bottom nav height for non-menu views */
+            padding-bottom: var(--nav-height); 
         }
         /* FIX END */
-        
-        /* Removed #header-fixed CSS */
         
         .hidden { display: none !important; }
         .container { padding-left: var(--content-pad); padding-right: var(--content-pad); max-width: 600px; margin: 0 auto; }
@@ -102,10 +100,8 @@
                 4px 4px 0 #555, 
                 6px 6px 8px rgba(0, 0, 0, 0.4); 
             margin-top: 5px; 
-            margin-bottom: 5px;
+            margin-bottom: 15px;
             display: block;
-            /* FIX: Ensure the title has bottom margin so it doesn't touch the next element */
-            margin-bottom: 15px; 
         }
         
         /* Goal 1: Search Bar Styling */
@@ -184,7 +180,7 @@
 
         /* Home View & Components */
         #home-view > .app-title {
-             margin-top: 0; /* Remove top margin from the first element in the container */
+             margin-top: 0; 
         }
         #slider-wrapper { overflow: hidden; border-radius: var(--border-radius); margin-bottom: 15px; box-shadow: var(--shadow); }
         #banner-slider { display: flex; width: 300%; transition: transform 0.5s ease-in-out; }
@@ -318,11 +314,87 @@
         .profile-field { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
         .profile-field-label { font-weight: 500; color: var(--secondary-color); }
         .stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; }
+
+
+        /* NEW: Rating Modal Styles */
+        #rating-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1020;
+            backdrop-filter: blur(4px);
+        }
+        .rating-card {
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 300px;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .rating-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        .rating-stars {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .rating-stars input[type="radio"] {
+            display: none;
+        }
+        .rating-stars label {
+            font-size: 2.5em;
+            color: #ccc;
+            cursor: pointer;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+        .rating-stars input[type="radio"]:checked ~ label {
+            color: #ffc107; /* Gold color */
+        }
+        .rating-stars label:hover,
+        .rating-stars label:hover ~ label {
+            color: #ffdb58; /* Lighter gold on hover */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body onclick="initAudioUnlock()"> 
     <audio id="order-done-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3" preload="auto"></audio>
     <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-sweep-transition-1065.mp3" preload="auto"></audio>
+
+    <!-- App Rating Modal (NEW) -->
+    <div id="rating-modal" class="hidden">
+        <div class="rating-card">
+            <h3>Rate Soyfa Food</h3>
+            <p>We'd love to hear your feedback!</p>
+            <div class="rating-stars">
+                <!-- 5-Star input. Clicking 5 stars redirects to Play Store -->
+                <input type="radio" id="app-s5" name="app-rating" value="5" onclick="redirectToPlayStore();"/><label for="app-s5" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s4" name="app-rating" value="4"/><label for="app-s4" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s3" name="app-rating" value="3"/><label for="app-s3" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s2" name="app-rating" value="2"/><label for="app-s2" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s1" name="app-rating" value="1"/><label for="app-s1" onclick="playClickSound()">★</label>
+            </div>
+            <p style="font-size: 0.8em; color: #777;">*5-star rating will take you to the Play Store!</p>
+            <button class="btn btn-secondary" style="margin-top: 15px;" onclick="document.getElementById('rating-modal').classList.add('hidden'); playClickSound();">Close</button>
+        </div>
+    </div>
+
 
     <!-- 1. Auth/Login Panel -->
     <div id="auth-panel" class="container">
@@ -448,6 +520,8 @@
                     <button class="btn btn-secondary" onclick="playClickSound(); toggleProfileEditMode(false);">Cancel</button>
                 </div>
                 <div style="margin-top: 30px;">
+                    <a href="#" class="info-link-btn" onclick="playClickSound(); document.getElementById('rating-modal').classList.remove('hidden');">Rate App</a> <!-- NEW Rate App Button -->
+                    <a href="#" class="info-link-btn" onclick="playClickSound(); shareApp();">Share App</a> <!-- NEW Share App Button -->
                     <a href="#" class="info-link-btn" onclick="playClickSound(); showProfileInfoPage('about-page');">About Us</a> 
                     <a href="#" class="info-link-btn" onclick="playClickSound(); showProfileInfoPage('privacy-page');">Privacy Policy</a> 
                     <a href="#" class="info-link-btn" onclick="playClickSound(); showProfileInfoPage('terms-page');">Terms & Conditions</a> 
@@ -510,6 +584,30 @@
         let currentRestaurantId = null, customerProfile = {}, cart = [], allRestaurantsData = {};
         const DELIVERY_FEE = 50.00;
         let currentSlide = 0, canPlayAudio = false, isSignUpMode = true; 
+        const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.soyfa.soyfaeducation";
+
+        // --- NEW: App Rating & Share Functions ---
+        function redirectToPlayStore() {
+            // Check if 5 stars is selected (or just redirect immediately for 5 star experience)
+            // Since we tied the click directly to the 5th star in HTML, this logic is simple:
+            if(document.getElementById('app-s5').checked) {
+                document.getElementById('rating-modal').classList.add('hidden');
+                alert("Thank you for your 5-star rating! Redirecting to Play Store...");
+                window.open(PLAY_STORE_URL, '_system'); // Use '_system' for native app if possible, or '_blank' for browser
+            }
+        }
+        
+        function shareApp() {
+            const shareText = encodeURIComponent("Soyfa Food ऐप बहुत शानदार है! इससे आप आसानी से अपने पसंदीदा रेस्टोरेंट से खाना ऑर्डर कर सकते हैं। इसे आज ही डाउनलोड करें: " + PLAY_STORE_URL);
+            
+            // Check for mobile to use WhatsApp link, otherwise use standard web share or alert
+            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                window.open("whatsapp://send?text=" + shareText, '_system');
+            } else {
+                alert("WhatsApp Web पर शेयर करने के लिए यह लिंक कॉपी करें:\n\n" + decodeURIComponent(shareText));
+            }
+        }
+        // --- END NEW FUNCTIONS ---
 
         // --- Auth & Init ---
         document.addEventListener('DOMContentLoaded', () => { if(document.getElementById('auth-panel').classList.contains('hidden')) return; toggleAuthMode(true); startAutoSlide(); });
@@ -670,4 +768,4 @@
         function submitRating(oId) { const v = document.querySelector(`input[name="r-${oId}"]:checked`)?.value; if(!v) return alert('Select stars'); db.ref(`orders/${oId}`).update({rating:parseInt(v)}).then(()=>{ alert('Thanks for rating!'); loadOrders(); }); }
     </script>
 </body>
-</html>
+</html>```
