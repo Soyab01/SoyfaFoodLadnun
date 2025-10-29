@@ -682,7 +682,7 @@
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <div class="nav-item active" data-panel="home-view" onclick="playClickSound(); showPanel('home-view');"><span class="icon"></span> Home</div>
-            <div class="nav-item" data-panel="orders-view" onclick="playClickSound(); showPanel('orders-view');"><span class="icon icon-orders"></span> Orders</div>
+            <div class="nav-item" data-panel="orders-view" onclick="playClickSound(); loadOrders(); showPanel('orders-view');"><span class="icon icon-orders"></span> Orders</div>
             <div class="nav-item" data-panel="profile-view" onclick="playClickSound(); showPanel('profile-view');"><span class="icon icon-profile"></span> Profile</div>
         </nav>
     </div>
@@ -727,22 +727,19 @@
             }
         }
         
+        // --- Goal 5: Share App to WhatsApp directly ---
         function shareApp() {
             const shareText = encodeURIComponent("Soyfa Food ऐप बहुत शानदार है! इससे आप आसानी से अपने पसंदीदा रेस्टोरेंट से खाना ऑर्डर कर सकते हैं। इसे आज ही डाउनलोड करें: " + PLAY_STORE_URL);
             
-            // Prefer navigator.share if available (more modern)
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Soyfa Food App',
-                    text: decodeURIComponent(shareText),
-                    url: PLAY_STORE_URL,
-                }).catch((error) => console.log('Error sharing', error));
-            } else if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                // Fallback for mobile WhatsApp
-                window.open("whatsapp://send?text=" + shareText, '_system');
-            } else {
-                // Fallback for desktop/web
-                alert("WhatsApp Web पर शेयर करने के लिए यह लिंक कॉपी करें:\n\n" + decodeURIComponent(shareText));
+            // Use the universal wa.me link which is more reliable for opening the app or web version.
+            const whatsappUrl = "https://wa.me/?text=" + shareText;
+
+            // Attempt to open the link in a new window/tab
+            const newWindow = window.open(whatsappUrl, '_blank'); 
+
+            // Basic fallback for pop-up blocked or general failure (for desktop users especially)
+            if (!newWindow || newWindow.closed || typeof newWindow.closed=='undefined') {
+                alert("WhatsApp नहीं खुला। कृपया इस लिंक को कॉपी करके शेयर करें:\n" + decodeURIComponent(shareText));
             }
         }
         
