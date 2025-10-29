@@ -474,6 +474,21 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        /* Checkout Delivery Details Styling */
+        .delivery-details-card { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 12px; 
+            box-shadow: var(--shadow);
+        }
+        .delivery-details-field {
+            padding: 8px 0;
+            border-bottom: 1px dotted #eee;
+            font-size: 0.95em;
+        }
+        .delivery-details-field:last-child { border-bottom: none; }
+        .details-label { font-weight: 500; color: var(--secondary-color); display: inline-block; width: 80px; }
     </style>
 </head>
 <body onclick="initAudioUnlock()"> 
@@ -668,11 +683,23 @@
                 </div>
                 
                 <h3 style="margin-top: 25px; margin-bottom: 15px;">Delivery Details</h3>
-                <div style="background: white; padding: 15px; border-radius: 12px; box-shadow: var(--shadow);">
+                
+                <!-- Display Mode for Delivery Details -->
+                <div id="delivery-details-display" class="delivery-details-card">
+                    <div class="delivery-details-field"><span class="details-label">Name:</span> <span id="display-checkout-name">N/A</span></div>
+                    <div class="delivery-details-field"><span class="details-label">Phone:</span> <span id="display-checkout-phone">N/A</span></div>
+                    <div class="delivery-details-field"><span class="details-label">Address:</span> <span id="display-checkout-address">N/A</span></div>
+                    <button class="btn btn-secondary btn-small" style="width: 100%; margin-top: 10px;" onclick="playClickSound(); toggleDeliveryDetailsEdit(true);"> Address Edit</button>
+                </div>
+                
+                <!-- Edit Mode for Delivery Details -->
+                <div id="delivery-details-edit" class="delivery-details-card hidden">
                     <input type="text" id="checkout-name" placeholder="Receiver Name" style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd;" required>
                     <input type="text" id="checkout-phone" placeholder="Receiver Phone" style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd;" required>
                     <textarea id="checkout-address" placeholder="Full Delivery Address" style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; resize: vertical; min-height: 80px;" required></textarea>
+                    <button class="btn btn-secondary btn-small" style="width: 100%; margin-top: 5px;" onclick="playClickSound(); toggleDeliveryDetailsEdit(false);">Cancel Edit</button>
                 </div>
+
 
                 <button class="btn btn-primary" id="place-order-btn" style="margin-top: 20px; font-size: 18px; padding: 15px;" onclick="playClickSound(); placeOrder();">CONFIRM ORDER (COD)</button>
             </div>
@@ -694,7 +721,9 @@
         const auth = firebase.auth(), db = firebase.database();
 
         // Global State
-        let currentRestaurantId = null, customerProfile = {}, cart = [], allRestaurantsData = {};
+        let currentRestaurantId = null, customerProfile = {};
+        let cart = [];
+        let allRestaurantsData = {};
         const DELIVERY_FEE = 50.00;
         let currentSlide = 0, canPlayAudio = false, isSignUpMode = true; 
         const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.soyfa.soyfaeducation";
@@ -872,9 +901,75 @@
         } }); }
 
         // --- Profile ---
-        function loadCustomerData(uid) { db.ref(`customers/${uid}`).on('value', s => { customerProfile = s.val() || {}; if(!customerProfile.email && auth.currentUser.email) customerProfile.email = auth.currentUser.email; document.getElementById('user-greeting').textContent = `Welcome, ${customerProfile.name ? customerProfile.name.split(' ')[0] : 'Foodie'}!`; ['name','email','phone','city','pincode','address'].forEach(f => document.getElementById(`display-${f}`).textContent = customerProfile[f] || 'N/A'); ['name','phone'].forEach(f => document.getElementById(`checkout-${f}`).value = customerProfile[f] || ''); document.getElementById('checkout-address').value = customerProfile.address || ''; loadOrders(); loadRestaurants(); }); } // Load orders on data load for rating check
+        function updateCheckoutAddressFromProfile() {
+            // Fills the edit mode fields with current profile data (which also holds last used address)
+            document.getElementById('checkout-name').value = customerProfile.name || '';
+            document.getElementById('checkout-phone').value = customerProfile.phone || '';
+            document.getElementById('checkout-address').value = customerProfile.address && customerProfile.address !== 'N/A' ? customerProfile.address : '';
+            
+            // Updates the display mode fields
+            document.getElementById('display-checkout-name').textContent = customerProfile.name || 'N/A';
+            document.getElementById('display-checkout-phone').textContent = customerProfile.phone || 'N/A';
+            document.getElementById('display-checkout-address').textContent = customerProfile.address || 'N/A';
+            
+            // Set the default view to display mode
+            toggleDeliveryDetailsEdit(false);
+        }
+
+        function loadCustomerData(uid) { 
+            db.ref(`customers/${uid}`).on('value', s => { 
+                customerProfile = s.val() || {}; 
+                if(!customerProfile.email && auth.currentUser.email) customerProfile.email = auth.currentUser.email; 
+                
+                document.getElementById('user-greeting').textContent = `Welcome, ${customerProfile.name ? customerProfile.name.split(' ')[0] : 'Foodie'}!`; 
+                
+                ['name','email','phone','city','pincode','address'].forEach(f => 
+                    document.getElementById(`display-${f}`).textContent = customerProfile[f] || 'N/A'
+                ); 
+                
+                // Call the new function to populate checkout fields and set display mode
+                updateCheckoutAddressFromProfile();
+                
+                loadOrders(); 
+                loadRestaurants(); 
+            }); 
+        } 
         function toggleProfileEditMode(e) { document.getElementById('profile-display-mode').classList.toggle('hidden', e); document.getElementById('profile-edit-form').classList.toggle('hidden', !e); if(e) ['name','email','phone','city','pincode','address'].forEach(f => document.getElementById(`profile-${f}`).value = customerProfile[f] || ''); }
-        function updateProfile() { const u = { name: document.getElementById('profile-name').value.trim(), phone: document.getElementById('profile-phone').value.trim(), city: document.getElementById('profile-city').value.trim(), pincode: document.getElementById('profile-pincode').value.trim(), address: document.getElementById('profile-address').value.trim() || 'N/A' }; if(!u.name||!u.phone||!u.city||!u.pincode) return alert('Fill required fields'); db.ref(`customers/${auth.currentUser.uid}`).update(u).then(() => { alert('Saved!'); toggleProfileEditMode(false); }).catch(e => alert(e.message)); }
+        function updateProfile() { 
+            const u = { 
+                name: document.getElementById('profile-name').value.trim(), 
+                phone: document.getElementById('profile-phone').value.trim(), 
+                city: document.getElementById('profile-city').value.trim(), 
+                pincode: document.getElementById('profile-pincode').value.trim(), 
+                address: document.getElementById('profile-address').value.trim() || 'N/A' 
+            }; 
+            if(!u.name||!u.phone||!u.city||!u.pincode) return alert('Fill required fields'); 
+            db.ref(`customers/${auth.currentUser.uid}`).update(u).then(() => { 
+                alert('Saved!'); 
+                toggleProfileEditMode(false); 
+            }).catch(e => alert(e.message)); 
+        }
+        
+        // --- Delivery Details Toggler ---
+        function toggleDeliveryDetailsEdit(showEditMode) {
+            const display = document.getElementById('delivery-details-display');
+            const edit = document.getElementById('delivery-details-edit');
+            
+            if (showEditMode) {
+                // Switch to edit mode: hide display, show edit
+                display.classList.add('hidden');
+                edit.classList.remove('hidden');
+            } else {
+                // Switch to display mode: hide edit, show display
+                // Update display content from edit fields (even if user canceled, it shows the saved data)
+                document.getElementById('display-checkout-name').textContent = document.getElementById('checkout-name').value || 'N/A';
+                document.getElementById('display-checkout-phone').textContent = document.getElementById('checkout-phone').value || 'N/A';
+                document.getElementById('display-checkout-address').textContent = document.getElementById('checkout-address').value || 'N/A';
+                
+                display.classList.remove('hidden');
+                edit.classList.add('hidden');
+            }
+        }
 
         // --- Restaurants & Menu ---
         function loadRestaurants() { const list = document.getElementById('restaurants-list'); if(!customerProfile.pincode || customerProfile.pincode === 'N/A') { list.innerHTML = '<p style="color:red;">Update Pincode in Profile to see restaurants.</p>'; return; } db.ref('restaurants').on('value', s => { allRestaurantsData = s.val() || {}; filterRestaurants(document.getElementById('restaurant-search').value); }); }
@@ -931,6 +1026,8 @@
                 document.getElementById('checkout-section').classList.remove('hidden');
             }
             updateCartDisplay();
+            // Ensure checkout details are loaded and display mode is set correctly when cart is opened
+            updateCheckoutAddressFromProfile(); 
         }
         function showCart() {
             if (!customerProfile.pincode || customerProfile.pincode === 'N/A') { alert('Update Pincode first.'); return showPanel('profile-view'); }
@@ -945,10 +1042,17 @@
              else showPanel('home-view');
         }
         function placeOrder() {
-            if(cart.length===0) return alert('Cart is empty');
-            const n=document.getElementById('checkout-name').value.trim(), p=document.getElementById('checkout-phone').value.trim(), a=document.getElementById('checkout-address').value.trim();
+            // Use the values from the EDIT fields, regardless of whether edit mode is currently displayed.
+            const n=document.getElementById('checkout-name').value.trim(), 
+                  p=document.getElementById('checkout-phone').value.trim(), 
+                  a=document.getElementById('checkout-address').value.trim();
+                  
             if(!n||!p||!a) return alert('Fill delivery details.');
-            const sub=cart.reduce((s,i)=>s+(i.price*i.quantity),0), total=sub+DELIVERY_FEE, rId=cart[0].restaurantId;
+            
+            const sub=cart.reduce((s,i)=>s+(i.price*i.quantity),0), 
+                  total=sub+DELIVERY_FEE, 
+                  rId=cart[0].restaurantId;
+            
             const orderRef = db.ref('orders').push();
             orderRef.set({
                 orderId: orderRef.key, customerUid: auth.currentUser.uid, restaurantId: rId, deliveryUid: '',
@@ -957,6 +1061,16 @@
                 customerName: n, phone: p, address: a, city: customerProfile.city, pincode: customerProfile.pincode,
                 paymentMethod: 'COD', status: 'PLACED', createdAt: new Date().toISOString()
             }).then(()=>{
+                
+                // --- Save new/updated address to profile for next order ---
+                const updatedProfile = {
+                    name: n,
+                    phone: p,
+                    address: a // Save the potentially updated name, phone, address
+                };
+                db.ref(`customers/${auth.currentUser.uid}`).update(updatedProfile);
+                // --- End Save new address ---
+                
                 cart=[];
                 // Show done modal and auto-redirect
                 showOrderDoneModal();
