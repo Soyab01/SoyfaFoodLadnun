@@ -73,7 +73,15 @@
 
         /* Auth Styles */
         #auth-panel { display: flex; justify-content: center; align-items: center; min-height: 100vh; flex-direction: column; }
-        #auth-image { width: 90%; max-width: 350px; height: 150px; object-fit: cover; border-radius: var(--border-radius); margin-bottom: 20px; box-shadow: var(--shadow); }
+        #auth-image { 
+            width: 90%; 
+            max-width: 350px; 
+            height: 150px; 
+            object-fit: cover; 
+            border-radius: var(--border-radius); 
+            margin-bottom: 20px; 
+            box-shadow: var(--shadow); 
+        }
         .auth-card { background: var(--card-background); padding: 30px; border-radius: var(--border-radius); box-shadow: var(--shadow); width: 90%; max-width: 350px; text-align: center; }
         .auth-card h2 { color: var(--primary-color); margin-bottom: 20px; }
         .auth-card input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
@@ -419,8 +427,9 @@
     </style>
 </head>
 <body onclick="initAudioUnlock()"> 
-    <audio id="order-done-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-notification-951.mp3" preload="auto"></audio>
-    <audio id="click-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-sweep-transition-1065.mp3" preload="auto"></audio>
+    <!-- IMPORTANT: Set the src for order-done-sound to the direct file link from your GitHub repo -->
+    <audio id="order-done-sound" src="https://audio-previews.elements.envatousercontent.com/files/510236607/preview.mp3" preload="auto"></audio>
+    <audio id="click-sound" src="https://raw.githubusercontent.com/Soyab01/SoyfaFoodLadnun/main/preview.mp3" preload="auto"></audio>
 
     <!-- App Rating Modal (NEW) -->
     <div id="rating-modal" class="hidden">
@@ -430,10 +439,10 @@
             <div class="rating-stars">
                 <!-- 5-Star input. Clicking 5 stars redirects to Play Store -->
                 <input type="radio" id="app-s5" name="app-rating" value="5" onclick="redirectToPlayStore();"/><label for="app-s5" onclick="playClickSound()">★</label>
-                <input type="radio" id="app-s4" name="app-rating" value="4" onclick="document.getElementById('rating-modal').classList.add('hidden'); alert('Thank you for your rating!'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });"/><label for="app-s4" onclick="playClickSound()">★</label>
-                <input type="radio" id="app-s3" name="app-rating" value="3" onclick="document.getElementById('rating-modal').classList.add('hidden'); alert('Thank you for your rating!'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });"/><label for="app-s3" onclick="playClickSound()">★</label>
-                <input type="radio" id="app-s2" name="app-rating" value="2" onclick="document.getElementById('rating-modal').classList.add('hidden'); alert('Thank you for your rating!'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });"/><label for="app-s2" onclick="playClickSound()">★</label>
-                <input type="radio" id="app-s1" name="app-rating" value="1" onclick="document.getElementById('rating-modal').classList.add('hidden'); alert('Thank you for your rating!'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });"/><label for="app-s1" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s4" name="app-rating" value="4" onclick="document.getElementById('rating-modal').classList.add('hidden'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true }); alert('Thank you for your rating!');"/><label for="app-s4" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s3" name="app-rating" value="3" onclick="document.getElementById('rating-modal').classList.add('hidden'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true }); alert('Thank you for your rating!');"/><label for="app-s3" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s2" name="app-rating" value="2" onclick="document.getElementById('rating-modal').classList.add('hidden'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true }); alert('Thank you for your rating!');"/><label for="app-s2" onclick="playClickSound()">★</label>
+                <input type="radio" id="app-s1" name="app-rating" value="1" onclick="document.getElementById('rating-modal').classList.add('hidden'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true }); alert('Thank you for your rating!');"/><label for="app-s1" onclick="playClickSound()">★</label>
             </div>
             <p style="font-size: 0.8em; color: #777;">*5-star rating will take you to the Play Store!</p>
             <button class="btn btn-secondary" style="margin-top: 15px;" onclick="document.getElementById('rating-modal').classList.add('hidden'); if(auth.currentUser) db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true }); playClickSound();">Close</button>
@@ -452,7 +461,8 @@
 
     <!-- 1. Auth/Login Panel -->
     <div id="auth-panel" class="container">
-        <img id="auth-image" src="https://t3.ftcdn.net/jpg/02/79/75/74/360_F_0279757414_o2KNnB8fZ2eahIK6SqydL4tGFkO5RDH5.jpg" alt="Food Delivery Banner">
+        <!-- FIX: Updated Image URL for reliability -->
+        <img id="auth-image" src="https://cdn.appsrhino.com/new-website-2022/strapi/What_is_the_scope_of_food_delivery_app_development_in_the_next_decade_6e1ff5706a.png" onerror="this.onerror=null;this.src='https://via.placeholder.com/350x150?text=Food+Delivery';" alt="Food Delivery Banner">
         <div class="auth-card" id="auth-main-card">
             <h2 id="auth-title">Sign Up</h2> 
             <input type="email" id="auth-email" placeholder="Email" required>
@@ -639,6 +649,20 @@
         const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.soyfa.soyfaeducation";
         let ratingPopUpTimer = null; // Timer variable for rating pop-up
 
+        // --- NEW: Audio Playback Fix ---
+        function playOrderDoneSound() { 
+             const sound = document.getElementById('order-done-sound');
+             if(sound) {
+                 sound.currentTime = 0; // Rewind to start
+                 // We use a promise check for reliable playback
+                 sound.play().catch(error => {
+                     // Note: Playback failed (usually due to uninitiated user interaction)
+                     console.error("Order Done Sound Playback failed:", error);
+                 }); 
+             }
+        }
+        // --- END Audio Fix ---
+
         // --- NEW: App Rating & Share Functions ---
         function redirectToPlayStore() {
              // Mark as prompted in DB immediately when 5 star is clicked
@@ -672,7 +696,7 @@
         }
         
         function showRatingPopUpOnce() {
-            // Check if the user is not yet prompted and has delivered orders
+            // Check if the user is not yet prompted and is logged in
              if (customerProfile.ratingPrompted !== true && auth.currentUser) {
                 
                 // Fetch the count of DELIVERED orders
@@ -692,10 +716,7 @@
                             // Set a 30 second timer for showing the pop-up
                             ratingPopUpTimer = setTimeout(() => {
                                 document.getElementById('rating-modal').classList.remove('hidden');
-                                
-                                // Mark as prompted in DB immediately after showing
-                                // NOTE: We update the DB here, but if the user closes without 5 stars, it's marked as prompted forever.
-                                db.ref(`customers/${auth.currentUser.uid}`).update({ ratingPrompted: true });
+                                // NOTE: Marking as prompted in DB is done by interaction or close button click
                             }, 30000); // 30 seconds
                         }
                     });
@@ -710,11 +731,11 @@
         }
 
         function showOrderDoneModal() {
-            // 1. Show the Order Done Modal
-            document.getElementById('order-done-modal').classList.remove('hidden');
-            
-            // 2. Play sound
+            // 1. Play success sound
             playOrderDoneSound();
+            
+            // 2. Show the Order Done Modal
+            document.getElementById('order-done-modal').classList.remove('hidden');
             
             // 3. Set timer for auto-redirect (2 seconds)
             setTimeout(() => {
@@ -729,9 +750,32 @@
 
         // --- Auth & Init ---
         document.addEventListener('DOMContentLoaded', () => { if(document.getElementById('auth-panel').classList.contains('hidden')) return; toggleAuthMode(true); startAutoSlide(); });
-        function initAudioUnlock() { if (canPlayAudio) return; const o = document.getElementById('order-done-sound'), c = document.getElementById('click-sound'); if(o) { o.volume=0.01; o.play().catch(()=>{}); } if(c) { c.volume=0.01; c.play().catch(()=>{}); } setTimeout(()=>{ if(o){o.pause();o.currentTime=0;o.volume=1.0;} if(c){c.pause();c.currentTime=0;c.volume=0.5;} canPlayAudio=true; }, 500); document.body.removeEventListener('click', initAudioUnlock); }
-        function playClickSound() { if(canPlayAudio && document.getElementById('click-sound')) { const s = document.getElementById('click-sound').cloneNode(true); s.volume=0.5; s.play().catch(()=>{}); } }
-        function playOrderDoneSound() { if(canPlayAudio && document.getElementById('order-done-sound')) document.getElementById('order-done-sound').play().catch(()=>{}); }
+        function initAudioUnlock() { 
+             // This function attempts to unlock audio on user interaction
+             if (canPlayAudio) return; 
+             const o = document.getElementById('order-done-sound');
+             const c = document.getElementById('click-sound');
+             
+             // Try to play both sounds muted/low volume to force unlock
+             if(o) { o.volume=0.01; o.play().catch(()=>{}); } 
+             if(c) { c.volume=0.01; c.play().catch(()=>{}); } 
+             
+             setTimeout(()=>{ 
+                 // Stop the unlock attempt and reset volumes
+                 if(o){o.pause();o.currentTime=0;o.volume=1.0;} 
+                 if(c){c.pause();c.currentTime=0;c.volume=0.5;} 
+                 canPlayAudio=true; 
+             }, 500); 
+             // Remove the listener after the first interaction
+             document.body.removeEventListener('click', initAudioUnlock); 
+        }
+        function playClickSound() { 
+             const sound = document.getElementById('click-sound');
+             if(canPlayAudio && sound) {
+                 sound.currentTime = 0;
+                 sound.play().catch(()=>{});
+             }
+        }
         function startAutoSlide() { setInterval(() => { currentSlide = (currentSlide + 1) % 3; document.getElementById('banner-slider').style.transform = `translateX(-${currentSlide * 100 / 3}%)`; }, 5000); }
 
         function toggleAuthMode(forceSignUp) { isSignUpMode = typeof forceSignUp === 'boolean' ? forceSignUp : !isSignUpMode; document.getElementById('auth-title').textContent = isSignUpMode ? 'Sign Up' : 'Login'; document.getElementById('auth-action-btn').textContent = isSignUpMode ? 'Sign Up' : 'Login'; ['auth-name','auth-phone','auth-city','auth-pincode','auth-address'].forEach(id => document.getElementById(id).classList.toggle('hidden', !isSignUpMode)); document.querySelector('.auth-card button:nth-of-type(2)').textContent = isSignUpMode ? 'Switch to Login' : 'Switch to Sign Up'; document.getElementById('auth-error').classList.add('hidden'); showInfoPage('auth-main-card'); }
@@ -763,7 +807,7 @@
             }
             
             if(panelId === 'orders-view') loadOrders();
-            // IMPORTANT: loadOrders now handles the rating pop-up trigger after checking delivered orders
+            // loadOrders will check for the rating pop-up condition.
             if(panelId === 'home-view') { loadRestaurants(); loadOrders(); } 
         }
         function showInfoPage(pId) { document.querySelectorAll('#auth-panel > div').forEach(e => e.classList.add('hidden')); document.getElementById('auth-image')?.classList.remove('hidden'); document.getElementById(pId).classList.remove('hidden'); if(pId!=='auth-main-card'){ document.getElementById('auth-panel').classList.remove('hidden'); document.getElementById('app-panel').classList.add('hidden'); } }
@@ -780,7 +824,7 @@
         } }); }
 
         // --- Profile ---
-        function loadCustomerData(uid) { db.ref(`customers/${uid}`).on('value', s => { customerProfile = s.val() || {}; if(!customerProfile.email && auth.currentUser.email) customerProfile.email = auth.currentUser.email; document.getElementById('user-greeting').textContent = `Welcome, ${customerProfile.name ? customerProfile.name.split(' ')[0] : 'Foodie'}!`; ['name','email','phone','city','pincode','address'].forEach(f => document.getElementById(`display-${f}`).textContent = customerProfile[f] || 'N/A'); ['name','phone'].forEach(f => document.getElementById(`checkout-${f}`).value = customerProfile[f] || ''); document.getElementById('checkout-address').value = customerProfile.address || ''; loadRestaurants(); }); }
+        function loadCustomerData(uid) { db.ref(`customers/${uid}`).on('value', s => { customerProfile = s.val() || {}; if(!customerProfile.email && auth.currentUser.email) customerProfile.email = auth.currentUser.email; document.getElementById('user-greeting').textContent = `Welcome, ${customerProfile.name ? customerProfile.name.split(' ')[0] : 'Foodie'}!`; ['name','email','phone','city','pincode','address'].forEach(f => document.getElementById(`display-${f}`).textContent = customerProfile[f] || 'N/A'); ['name','phone'].forEach(f => document.getElementById(`checkout-${f}`).value = customerProfile[f] || ''); document.getElementById('checkout-address').value = customerProfile.address || ''; loadOrders(); loadRestaurants(); }); } // Load orders on data load for rating check
         function toggleProfileEditMode(e) { document.getElementById('profile-display-mode').classList.toggle('hidden', e); document.getElementById('profile-edit-form').classList.toggle('hidden', !e); if(e) ['name','email','phone','city','pincode','address'].forEach(f => document.getElementById(`profile-${f}`).value = customerProfile[f] || ''); }
         function updateProfile() { const u = { name: document.getElementById('profile-name').value.trim(), phone: document.getElementById('profile-phone').value.trim(), city: document.getElementById('profile-city').value.trim(), pincode: document.getElementById('profile-pincode').value.trim(), address: document.getElementById('profile-address').value.trim() || 'N/A' }; if(!u.name||!u.phone||!u.city||!u.pincode) return alert('Fill required fields'); db.ref(`customers/${auth.currentUser.uid}`).update(u).then(() => { alert('Saved!'); toggleProfileEditMode(false); }).catch(e => alert(e.message)); }
 
@@ -888,24 +932,45 @@
                         
                         const step = ['CANCELLED','PLACED','PREPARING','OUT_FOR_DELIVERY','DELIVERED'].indexOf(o.status.replace('ACCEPTED','PLACED').replace('READY_FOR_PICKUP','PREPARING').replace('PICKED_UP','OUT_FOR_DELIVERY'));
                         const prog = step<=0?'0%':step===1?'10%':step===2?'40%':step===3?'70%':'100%';
-                        const trackHTML = o.status==='CANCELLED'?'':`<div class="tracking-bar" style="--progress-width:${prog}"><div class="tracking-step ${step>=1?'active':''}"><span class="tracking-icon">🍽️</span>Restaurant</div><div class="tracking-step ${step>=2?'active':''}"><span class="tracking-icon">🍳</span>Preparing</div><div class="tracking-step ${step>=3?'active':''}"><span class="tracking-icon">🛵</span>Out</div><div class="tracking-step ${step>=4?'active':''}"><span class="tracking-icon">🏠</span>Delivered</div></div>`;
-                        const ratingHTML = (o.status==='DELIVERED' && !o.rating) ? `<div style="margin-top:10px;border-top:1px dashed #eee;padding-top:10px;"><p>Rate:</p><div class="stars"><input type="radio" id="s5-${o.orderId}" name="r-${o.orderId}" value="5"/><label for="s5-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s4-${o.orderId}" name="r-${o.orderId}" value="4"/><label for="s4-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s3-${o.orderId}" name="r-${o.orderId}" value="3"/><label for="s3-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s2-${o.orderId}" name="r-${o.orderId}" value="2"/><label for="s2-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s1-${o.orderId}" name="r-${o.orderId}" value="1"/><label for="s1-${o.orderId}" onclick="playClickSound()">★</label></div><button class="btn btn-primary btn-small" onclick="submitRating('${o.orderId}')">Submit</button></div>` : (o.rating?`<p style="color:green;font-weight:bold;">You rated: ⭐${o.rating}</p>`:'');
+                        
+                        // ADVANCED RATING HTML WITH COMMENT BOX
+                        const ratingHTML = (o.status==='DELIVERED' && !o.rating) ? `<div style="margin-top:10px;border-top:1px dashed #eee;padding-top:10px;"><p>Rate:</p><div class="stars"><input type="radio" id="s5-${o.orderId}" name="r-${o.orderId}" value="5"/><label for="s5-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s4-${o.orderId}" name="r-${o.orderId}" value="4"/><label for="s4-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s3-${o.orderId}" name="r-${o.orderId}" value="3"/><label for="s3-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s2-${o.orderId}" name="r-${o.orderId}" value="2"/><label for="s2-${o.orderId}" onclick="playClickSound()">★</label><input type="radio" id="s1-${o.orderId}" name="r-${o.orderId}" value="1"/><label for="s1-${o.orderId}" onclick="playClickSound()">★</label></div><textarea id="comment-${o.orderId}" placeholder="Write a comment (optional)" style="width:100%; padding:8px; border:1px solid #ddd; border-radius:8px; margin-top:10px;"></textarea><button class="btn btn-primary btn-small" onclick="submitRating('${o.orderId}')">Submit Rating</button></div>` : (o.rating?`<p style="color:green;font-weight:bold;">You rated: ⭐${o.rating}${o.comment?` ("${o.comment}")`:''}</p>`:'');
+                        
                         list.innerHTML += `<div class="order-card"><div class="order-header"><h4>#${o.orderId.substring(0,8)}</h4><span class="order-status ${o.status.replace(/_/g,'')}">${o.status.replace(/_/g,' ')}</span></div><p>From: <strong>${rData[o.restaurantId]?.name||'Restaurant'}</strong> | ₹${o.totalAmount.toFixed(2)}</p>${trackHTML}<p style="font-size:0.9em;color:#777;margin-top:5px;">${o.items.map(i=>`${i.name} x${i.quantity}`).join(', ')}</p>${ratingHTML}</div>`;
                     });
                     
-                    // FIX: Check for rating pop-up condition after loading orders
-                    if (deliveredCount === 1 && customerProfile.ratingPrompted !== true) {
-                        // User has exactly one DELIVERED order and hasn't been prompted yet.
-                        // Wait 30 seconds before showing the pop-up
-                        ratingPopUpTimer = setTimeout(() => {
-                            document.getElementById('rating-modal').classList.remove('hidden');
-                        }, 30000); // 30 seconds
+                    // FIX: Check for rating pop-up condition after loading delivered orders
+                    if (deliveredCount === 1 && customerProfile.ratingPrompted !== true && document.querySelector('.nav-item.active')?.dataset.panel === 'home-view') {
+                        // User has exactly one DELIVERED order and hasn't been prompted yet AND is on the Home Screen.
+                        // Set a 30 second timer for showing the pop-up
+                        if (ratingPopUpTimer === null) { // Prevent setting multiple timers
+                            ratingPopUpTimer = setTimeout(() => {
+                                document.getElementById('rating-modal').classList.remove('hidden');
+                                // NOTE: Marking as prompted in DB is done by interaction or close button click
+                            }, 30000); // 30 seconds
+                        }
                     }
 
                 });
             });
         }
-        function submitRating(oId) { const v = document.querySelector(`input[name="r-${oId}"]:checked`)?.value; if(!v) return alert('Select stars'); db.ref(`orders/${oId}`).update({rating:parseInt(v)}).then(()=>{ alert('Thanks for rating!'); loadOrders(); }); }
+        // ADVANCED RATING SUBMISSION FUNCTION
+        function submitRating(oId) { 
+            const v = document.querySelector(`input[name="r-${oId}"]:checked`)?.value; 
+            const c = document.getElementById(`comment-${oId}`)?.value.trim();
+            if(!v) return alert('Select stars'); 
+            
+            const updates = {
+                rating: parseInt(v),
+                comment: c || null,
+                ratedAt: new Date().toISOString()
+            };
+            
+            db.ref(`orders/${oId}`).update(updates).then(()=>{ 
+                alert('Thanks for your detailed rating and feedback!'); 
+                loadOrders(); 
+            }).catch(e => alert(e.message)); 
+        }
         
         // Update close button functionality to mark as shown
         document.querySelector('#rating-modal .btn-secondary').onclick = function() {
